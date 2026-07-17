@@ -239,6 +239,7 @@ impl IDropTarget_Impl for DragDropTarget_Impl {
       (self.listener)(DragDropEvent::Drop {
         paths,
         position: (pt.x as _, pt.y as _),
+        mode: None,
       });
 
       if let Some(hdrop) = hdrop {

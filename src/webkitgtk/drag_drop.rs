@@ -111,6 +111,7 @@ pub(crate) fn connect_drag_event(webview: &WebView, handler: Box<dyn Fn(DragDrop
           return controller.call(DragDropEvent::Drop {
             paths,
             position: (x, y),
+            mode: None,
           });
         }
       }

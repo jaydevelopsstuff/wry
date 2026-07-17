@@ -2315,9 +2315,43 @@ pub enum DragDropEvent {
     paths: Vec<PathBuf>,
     /// Position of the drag operation, relative to the webview top-left corner.
     position: (i32, i32),
+    mode: Option<DragMode>,
   },
   /// The drag operation has been cancelled or left the window.
   Leave,
+}
+
+#[non_exhaustive]
+#[derive(Debug, Clone, Copy, Default)]
+pub enum DragMode {
+  #[default]
+  Copy,
+  Move,
+}
+
+#[cfg(target_os = "macos")]
+impl From<DragMode> for objc2_app_kit::NSDragOperation {
+  fn from(value: DragMode) -> Self {
+    match value {
+      DragMode::Copy => objc2_app_kit::NSDragOperation::Copy,
+      DragMode::Move => objc2_app_kit::NSDragOperation::Move,
+    }
+  }
+}
+
+#[cfg(target_os = "macos")]
+impl TryFrom<objc2_app_kit::NSDragOperation> for DragMode {
+  type Error = ();
+
+  fn try_from(value: objc2_app_kit::NSDragOperation) -> std::result::Result<Self, Self::Error> {
+    use objc2_app_kit::NSDragOperation as NSDO;
+
+    match value {
+      NSDO::Copy => Ok(Self::Copy),
+      NSDO::Move => Ok(Self::Move),
+      _ => Err(()),
+    }
+  }
 }
 
 /// Get WebView/Webkit version on current platform.

@@ -26,8 +26,12 @@ fn main() -> wry::Result<()> {
         println!("DragEnter: {position:?} {paths:?} ")
       }
       wry::DragDropEvent::Over { position } => println!("DragOver: {position:?} "),
-      wry::DragDropEvent::Drop { paths, position } => {
-        println!("DragDrop: {position:?} {paths:?} ")
+      wry::DragDropEvent::Drop {
+        paths,
+        position,
+        mode,
+      } => {
+        println!("DragDrop: {position:?} {paths:?} {mode:?}")
       }
       wry::DragDropEvent::Leave => println!("DragLeave"),
       _ => {}

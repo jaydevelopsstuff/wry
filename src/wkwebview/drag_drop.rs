@@ -11,7 +11,7 @@ use objc2::{
 use objc2_app_kit::{NSDragOperation, NSDraggingInfo, NSFilenamesPboardType};
 use objc2_foundation::{NSArray, NSPoint, NSRect, NSString};
 
-use crate::DragDropEvent;
+use crate::{DragDropEvent, DragMode};
 
 use super::WryWebView;
 
@@ -85,9 +85,14 @@ pub(crate) fn perform_drag_operation(
   let dl: NSPoint = unsafe { drag_info.draggingLocation() };
   let frame: NSRect = this.frame();
   let position = (dl.x as i32, (frame.size.height - dl.y) as i32);
+  let mode: Option<DragMode> = drag_info.draggingSourceOperationMask().try_into().ok();
 
   let listener = &this.ivars().drag_drop_handler;
-  if !listener(DragDropEvent::Drop { paths, position }) {
+  if !listener(DragDropEvent::Drop {
+    paths,
+    position,
+    mode,
+  }) {
     // Reject the Wry drop (invoke the OS default behaviour)
     unsafe { objc2::msg_send![super(this), performDragOperation: drag_info] }
   } else {
