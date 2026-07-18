@@ -2315,7 +2315,10 @@ pub enum DragDropEvent {
     paths: Vec<PathBuf>,
     /// Position of the drag operation, relative to the webview top-left corner.
     position: (i32, i32),
-    /// The mode of the dropped drag operation. Only supported on macOS.
+    /// The mode of the dropped drag operation, if available.
+    ///
+    /// This is only supported on macOS, and can still be [`None`] if
+    /// the drag mode returned by macOS APIs is unrecognized.
     mode: Option<DragMode>,
   },
   /// The drag operation has been cancelled or left the window.
