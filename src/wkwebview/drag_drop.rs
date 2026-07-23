@@ -85,13 +85,13 @@ pub(crate) fn perform_drag_operation(
   let dl: NSPoint = unsafe { drag_info.draggingLocation() };
   let frame: NSRect = this.frame();
   let position = (dl.x as i32, (frame.size.height - dl.y) as i32);
-  let mode: Option<DragMode> = drag_info.draggingSourceOperationMask().try_into().ok();
+  let mode: DragMode = drag_info.draggingSourceOperationMask().into();
 
   let listener = &this.ivars().drag_drop_handler;
   if !listener(DragDropEvent::Drop {
     paths,
     position,
-    mode,
+    mode: Some(mode),
   }) {
     // Reject the Wry drop (invoke the OS default behaviour)
     unsafe { objc2::msg_send![super(this), performDragOperation: drag_info] }

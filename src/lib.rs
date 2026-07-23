@@ -2331,6 +2331,8 @@ pub enum DragMode {
   #[default]
   Copy,
   Move,
+  Link,
+  MacOSOther(usize),
 }
 
 #[cfg(target_os = "macos")]
@@ -2339,21 +2341,22 @@ impl From<DragMode> for objc2_app_kit::NSDragOperation {
     match value {
       DragMode::Copy => objc2_app_kit::NSDragOperation::Copy,
       DragMode::Move => objc2_app_kit::NSDragOperation::Move,
+      DragMode::Link => objc2_app_kit::NSDragOperation::Link,
+      DragMode::MacOSOther(v) => objc2_app_kit::NSDragOperation(v),
     }
   }
 }
 
 #[cfg(target_os = "macos")]
-impl TryFrom<objc2_app_kit::NSDragOperation> for DragMode {
-  type Error = ();
-
-  fn try_from(value: objc2_app_kit::NSDragOperation) -> std::result::Result<Self, Self::Error> {
+impl From<objc2_app_kit::NSDragOperation> for DragMode {
+  fn from(value: objc2_app_kit::NSDragOperation) -> Self {
     use objc2_app_kit::NSDragOperation as NSDO;
 
     match value {
-      NSDO::Copy => Ok(Self::Copy),
-      NSDO::Move => Ok(Self::Move),
-      _ => Err(()),
+      NSDO::Copy => Self::Copy,
+      NSDO::Move => Self::Move,
+      NSDO::Link => Self::Link,
+      v => Self::MacOSOther(v.0),
     }
   }
 }
